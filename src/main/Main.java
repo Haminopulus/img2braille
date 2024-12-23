@@ -7,6 +7,7 @@ import braille.convert.ASCII;
 import braille.convert.Braille;
 import braille.input.FileHandler;
 
+//TODO: Width, Height, Color, Outfile
 public class Main {
   public static void main(String... args) {
     Boolean ASCII = false, BRAILLE = false, INVERT = false, IGNORE = false;
