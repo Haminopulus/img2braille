@@ -121,7 +121,7 @@ public class Main {
         HEIGHT = ((HEIGHT == 0) ? fHandler.getBufImg().getHeight() : HEIGHT);
 
         System.out.print(
-            (BRAILLE ? new Braille(fHandler.getBufImg(), INVERT, BRIGHTNESS, WIDTH, HEIGHT) + "\n" : "")
+            (BRAILLE ? new Braille(fHandler.resizeBufImg(WIDTH, HEIGHT), INVERT, BRIGHTNESS) + "\n" : "")
             + (ASCII ? new Ascii(fHandler.getBufImg(), INVERT, PALETTE, WIDTH, HEIGHT) + "\n" : ""));
       } catch (Exception e) {
         System.err.println("Error while reading input file:");
