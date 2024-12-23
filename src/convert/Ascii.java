@@ -3,14 +3,14 @@ package braille.convert;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 
-public class ASCII {
+public class Ascii {
   private BufferedImage img;
   private StringBuilder output = new StringBuilder();
   private String palette; 
   private int w, h, dw, dh;
   private int primary;
 
-  public ASCII(BufferedImage img, Boolean INVERT, String palette, int w, int h) {
+  public Ascii(BufferedImage img, Boolean INVERT, String palette, int w, int h) {
     this.img = img;
     this.w = w;
     this.h = h;

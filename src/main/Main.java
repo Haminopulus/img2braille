@@ -3,7 +3,7 @@ package braille.main;
 import java.io.File;
 import java.util.ArrayList;
 
-import braille.convert.ASCII;
+import braille.convert.Ascii;
 import braille.convert.Braille;
 import braille.input.FileHandler;
 
@@ -57,7 +57,6 @@ public class Main {
           case "-p":
             try {
               PALETTE = args[i+1];
-              System.out.println(PALETTE);
               IGNORE = true;
             } catch (IndexOutOfBoundsException e) {
               System.err.println("No value provided for argument '-p', palette (String) is required. Ignoring.");
@@ -113,14 +112,17 @@ public class Main {
     } else {
       System.err.println("Error: No arguments provided (try -h for help)");
     }
+
     for (File file : INFILES) {
       try {
         fHandler.setImage(file);
+        // if width has not been provided as arg, just use the image width
         WIDTH = ((WIDTH == 0) ? fHandler.getBufImg().getWidth() : WIDTH);
         HEIGHT = ((HEIGHT == 0) ? fHandler.getBufImg().getHeight() : HEIGHT);
+
         System.out.print(
             (BRAILLE ? new Braille(fHandler.getBufImg(), INVERT, BRIGHTNESS, WIDTH, HEIGHT) + "\n" : "")
-            + (ASCII ? new ASCII(fHandler.getBufImg(), INVERT, PALETTE, WIDTH, HEIGHT) + "\n" : ""));
+            + (ASCII ? new Ascii(fHandler.getBufImg(), INVERT, PALETTE, WIDTH, HEIGHT) + "\n" : ""));
       } catch (Exception e) {
         System.err.println("Error while reading input file:");
         System.err.println(e.getMessage());

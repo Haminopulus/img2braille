@@ -1,8 +1,8 @@
 all: compile run
 
-compile: ./src/main/Main.java ./src/input/FileHandler.java ./src/convert/ASCII.java ./src/convert/Braille.java 
+compile: ./src/main/Main.java ./src/input/FileHandler.java ./src/convert/Ascii.java ./src/convert/Braille.java 
 	mkdir -p target/braille/
-	javac -cp "./src/" "./src/input/FileHandler.java" "./src/main/Main.java" "./src/convert/ASCII.java" "./src/convert/Braille.java" -d target
+	javac -cp "./src/" "./src/input/FileHandler.java" "./src/main/Main.java" "./src/convert/Ascii.java" "./src/convert/Braille.java" -d target
 
 run:
 	rm -f ./output.txt
