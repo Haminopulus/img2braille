@@ -17,17 +17,21 @@ public class Braille {
   /** primary color (either {@code white} or {@code black}, depending on whether the Image has been inverted) */
   private static int primary;
   private final int brightness;
-  
+  private int w, h, dw, dh;
 
-  public Braille(BufferedImage img, Boolean INVERT, int brightness) {
+  public Braille(BufferedImage img, Boolean INVERT, int brightness, int w, int h) {
     this.img = img;
+    this.h = h;
+    this.w = w;
+    this.dh = (int) Math.floor(((double)(img.getHeight()-img.getHeight()%4)/4.0)/h);
+    this.dw = (int) Math.floor(((double)(img.getWidth()-img.getWidth()%4)/4.0)/w);
     primary = (INVERT ? 0 : 1);
     this.brightness = brightness;
     toBraille();
   }
 
   private void toBraille() {
-    for (int i = 0; i < img.getHeight()-img.getHeight()%4; i+=4)
+    for (int i = 0; i < img.getHeight()-img.getHeight()%4; i+=4*dw)
     {
       for (int j = 0; j < img.getWidth()-img.getWidth()%2; j+=2) 
       {
