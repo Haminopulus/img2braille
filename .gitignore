@@ -1,4 +1,5 @@
-images
-target
+images/
+target/
 output.txt
-.target
+.target/
+todo.txt

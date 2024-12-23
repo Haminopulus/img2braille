@@ -4,13 +4,16 @@ import java.awt.Color;
 import java.awt.image.BufferedImage;
 
 public class ASCII {
-  BufferedImage img;
-  StringBuilder output = new StringBuilder();
-  String palette = "  ...,,:*%#"; 
-  int txtW = 2, txtH = 5;
+  private BufferedImage img;
+  private StringBuilder output = new StringBuilder();
+  private String palette; 
+  private int txtW = 2, txtH = 5;
+  private int primary;
 
-  public ASCII(BufferedImage img) {
+  public ASCII(BufferedImage img, Boolean INVERT, String palette) {
     this.img = img;
+    this.palette = palette;
+    primary = (INVERT ? 255 : 0);
     toASCII();
   }
 
@@ -36,7 +39,8 @@ public class ASCII {
         gammaSum += (double)(rgb.getRed() + rgb.getBlue() + rgb.getGreen())/3.0;
       }
     }
-    return (int) Math.floor(gammaSum/(double)(txtW*txtH));
+    int meanGamma = (int) Math.floor(gammaSum/(double)(txtW*txtH));
+    return Math.abs(primary - meanGamma);
   }
 
   private char matchGamma(int gamma) {

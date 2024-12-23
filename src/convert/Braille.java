@@ -2,7 +2,6 @@ package braille.convert;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
-import braille.utils.Constants;
 
 /** Class that takes in a BufferedImage and Converts it to Unicode Braille Patterns. 
  * <p> Is accessed via usage of {@code toString() } method. </p>
@@ -16,11 +15,14 @@ public class Braille {
   /** Base 16 starting value of the Braille Patterns in the Unicode character set */
   private static final int hexBase = Integer.parseInt("2800", 16);
   /** primary color (either {@code white} or {@code black}, depending on whether the Image has been inverted) */
-  private static final int primary = ((Constants.INVERT) ? 0 : 1);
+  private static int primary;
+  private final int brightness;
   
 
-  public Braille(BufferedImage img) {
+  public Braille(BufferedImage img, Boolean INVERT, int brightness) {
     this.img = img;
+    primary = (INVERT ? 0 : 1);
+    this.brightness = brightness;
     toBraille();
   }
 
@@ -62,7 +64,7 @@ public class Braille {
     StringBuilder bin = new StringBuilder();
     for (int i = dots.length-1; i >= 0; i--)
     {
-      bin.append((dots[i] > Constants.BRIGHTNESS) ? primary : 1 - primary);
+      bin.append((dots[i] > brightness) ? primary : 1 - primary);
     }
     return Character.toString(Integer.parseInt(bin.toString(), 2) + hexBase);
   }
