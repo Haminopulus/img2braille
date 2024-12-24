@@ -7,25 +7,33 @@ import java.awt.image.BufferedImage;
  * <p> Is accessed via usage of {@code toString() } method. </p>
  * <p> The size of the Image is preserved 1:1 unless its height and width arent divisible by 4 and 2 respectively. </p>
  * @see <a href="https://en.wikipedia.org/wiki/Braille_Patterns">https://en.wikipedia.org/wiki/Braille_Patterns</a>
- */
+ **/
 
 public class Braille {
   private BufferedImage img;
   private StringBuilder output = new StringBuilder();
-  /** Base 16 starting value of the Braille Patterns in the Unicode character set */
+  private int primary; 
+  private int brightness;
+  
+  /** Base 16 starting value of the Braille Patterns in the Unicode character set. **/
   private static final int hexBase = Integer.parseInt("2800", 16);
-  /** primary color (either {@code white} or {@code black}, depending on whether the Image has been inverted) */
-  private static int primary;
-  private final int brightness;
-  private int w, h;
 
-  public Braille(BufferedImage img, Boolean INVERT, int brightness) {
+  /** Given an image, inversion bool and a cutoff for the minimum drawing brightness, creates an instance of Braille class.  
+   *  <p> Automatically converts the given image to its braille counterpart, can be printed to stdout right away. </p>
+   *  @param img the {@code BufferedImage} that should be converted 
+   *  @param invert the {@code Boolean}, that decides whether color should be inverted
+   *  @param brightness the {@code int} value represetning the desired brightness cutoff 
+   **/
+  public Braille(BufferedImage img, Boolean invert, int brightness) {
     this.img = img;
-    primary = (INVERT ? 0 : 1);
     this.brightness = brightness;
+
+    primary = (invert ? 0 : 1);
+    
     toBraille();
   }
-
+  
+  /** Converts the internally saved BufferedImage to Braille and saves it in the output StringBuilder. **/
   private void toBraille() {
     for (int i = 0; i < img.getHeight()-img.getHeight()%4; i+=4)
     {
@@ -42,16 +50,18 @@ public class Braille {
    *    2  5
    *    3  6
    *    7  8
-   *
-   * Pos 1-8 as binary number ("1" = on, "0" = off), add with 2800_16
    * _1_ : starting point
    */ 
 
+  /** checks the rectangular 2*4 pixel Array at position x,y. 
+   * Converts it to the corresponding 8-dot braille character 
+   * @param x (int) horizontal starting coordinate
+   * @param y (int) vertical starting coordinate
+   * @return the {@code String} value corresponding to the fitting unicode braille character
+   **/
   private String getBraillePattern(int x, int y) 
   {
     int[] dots = new int[8];
-    // I NEED to automate this somehow
-    // The first 6 are easy but i would hate to do the last two serparate
     dots[0] = getGamma(x, y);
     dots[1] = getGamma(x, y+1);
     dots[2] = getGamma(x, y+2);
@@ -62,17 +72,22 @@ public class Braille {
     dots[7] = getGamma(x + 1, y + 3);
 
     StringBuilder bin = new StringBuilder();
-    for (int i = dots.length-1; i >= 0; i--)
+    for (int i = dots.length - 1; i >= 0; i--)
     {
       bin.append((dots[i] > brightness) ? primary : 1 - primary);
     }
     return Character.toString(Integer.parseInt(bin.toString(), 2) + hexBase);
   }
 
+  /** Returns the Gamma Value of the pixel in the BufferedImage at position (x, y) 
+   * @param x (int) the horizontal coordinate
+   * @param y (int) the vertical coordinate
+   * @return the {@code int} value corresponding to the gamma value at the given coordinate
+   **/
   private int getGamma(int x, int y) 
   {
     Color rgb = new Color(img.getRGB(x,y));
-    return (int)Math.ceil((double)(rgb.getRed() + rgb.getBlue() + rgb.getGreen())/3.0);
+    return (int) Math.ceil((double)(rgb.getRed() + rgb.getBlue() + rgb.getGreen())/3.0);
   }
 
   @Override
