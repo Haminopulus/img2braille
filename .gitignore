@@ -2,5 +2,4 @@ images/
 target/
 output.txt
 .target/
-todo.txt
-*.sh
+todo

@@ -1,0 +1,3 @@
+#! /usr/bin/bash
+# Program files are installed into the Home directory for easy removal
+java -cp /usr/local/share/ braille.main.Main ${1+"$@"}
