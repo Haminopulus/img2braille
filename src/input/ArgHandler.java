@@ -6,22 +6,30 @@ import java.util.ArrayList;
 import braille.convert.Ascii; 
 import braille.convert.Braille;
 import braille.input.FileHandler;
+import braille.gui.Gui;
 
 public class ArgHandler {
   private static final String help = 
     "braille [ARGS] <input files>\n"
-   +"\nARGS:"
+   +"\nARGS:\n"
+   +"   active:\n"
    +"\t'-h'/'--help'                                  print this help message\n"
    +"\t'-A'/'--ascii'                                 convert input image file to ASCII\n"
-   +"\t'-B'/'--braille'                               convert input image file to BRAILLE dot patterns\n\n"
+   +"\t'-B'/'--braille'                               convert input image file to BRAILLE dot patterns\n"
+   +"\t'-G'/'--gui'                                   runs in GUI-mode. \n\n"
+   +"   passive:\n"
    +"\t'-i'/'--invert'                                invert the input image before conversion\n"
+   +"\t'-c'/'--color'                              use the original images pixel colors as the ascii/braille text colors\n"
    +"\t'-p [STRING]'/'--palette [STRING]'             the string after this argument is assigned as the char palette (only for ASCII)\n"
-   +"\t'-b [INT]'/'--brightness [INT]'                uses the given integer value as brightness cutoff (only for BRAILLE) \n\n"
+   +"\t'-b [INT]'/'--brightness [INT]'                uses the given integer value as brightness cutoff (only for BRAILLE) \n"
    +"\t'-W [INT]'/'--width [INT]'                     Changes width to [INT] chars\n"
-   +"\t'-H [INT]'/'--height [INT]'                    Changes height to [INT] chars\n\n"
+   +"\t'-H [INT]'/'--height [INT]'                    Changes height to [INT] chars\n"
    +"\t'-o [PATH]'/'--outfile [PATH]'                 prints the converted ASCII/Braille to the given file\n";
-
-  private Boolean ascii = false, braille = false, invert = false, ignore = false, helped = false;
+  
+  // TODO: make these a hashmap, so it can be passed more easily to the gui later
+  private Boolean ascii = false, braille = false, invert = false, ignore = false, helped = false; 
+  private Boolean color = false, gui = false;
+  private File outFile;
   private String palette = "  .-~=*%#W";
   private int brightness = 100, width = 0, height = 0;
   private ArrayList<File> inFiles = new ArrayList<>();
@@ -44,14 +52,26 @@ public class ArgHandler {
           ascii = true;
           break;
 
-        case "-B":
         case "--braille":
+        case "-B":
           braille = true;
           break;
 
+        case "--gui":
+        case "-g":
+          gui = true;
+          break;
+
+        // passive args
         case "--invert":
         case "-i":
           invert = true;
+          break;
+
+        case "--color":
+        case "--colour": // for (Brit) inclusivity
+        case "-c":
+          color = true;
           break;
 
         case "--palette":

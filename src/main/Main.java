@@ -3,7 +3,7 @@ package braille.main;
 import java.io.FileNotFoundException;
 import braille.input.ArgHandler;
 
-//TODO: Color, Outfile
+//TODO: Color, Outfile, GUI
 
 public class Main {
   public static void main(String... args) {

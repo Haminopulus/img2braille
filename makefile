@@ -1,9 +1,9 @@
 all: compile run
 
-sources = ./src/main/Main.java ./src/input/FileHandler.java ./src/convert/Ascii.java ./src/convert/Braille.java ./src/input/ArgHandler.java
+sources = ./src/main/Main.java ./src/input/ArgHandler.java ./src/input/FileHandler.java ./src/gui/Gui.java ./src/convert/Ascii.java ./src/convert/Braille.java 
 
 compile: $(sources) 
-	mkdir -p target/braille/
+	mkdir -p target/
 	javac -cp src/ $(sources) -d target
 
 run:
