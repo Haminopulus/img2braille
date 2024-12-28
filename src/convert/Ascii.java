@@ -11,8 +11,7 @@ import java.awt.image.BufferedImage;
 public class Ascii {
   private BufferedImage img;
   private StringBuilder output = new StringBuilder();
-  private String palette; 
-  private int width, height, dw, dh;
+  private String palette;
   private int primary;
   
   /** Given an image, inversion bool, a palette and the desired width/height in characters, creates an instance of Ascii class.  
@@ -20,18 +19,12 @@ public class Ascii {
    *  @param img the {@code BufferedImage} that should be converted 
    *  @param invert the {@code Boolean}, that decides whether color should be inverted
    *  @param palette the {@code String} of chars that should be used to draw the Ascii image, ordered from darkest to brightest
-   *  @param width the {@code int} value representing the desired image width
-   *  @param height the {@code int} value represetning the desired image height
    */
-  public Ascii(BufferedImage img, Boolean invert, String palette, int width, int height) {
+  public Ascii(BufferedImage img, Boolean invert, String palette) {
     this.img = img;
-    this.width = width;
-    this.height = height;
     this.palette = palette;
 
     primary = (invert ? 255 : 0);
-    dw = (int)Math.floor((double)img.getWidth() / (double)width);
-    dh = (int)Math.floor((double)img.getHeight() / (double)height);
     
     toASCII();
   }
@@ -39,9 +32,9 @@ public class Ascii {
   /** Converts the internally saved BufferedImage to Ascii and saves it in the output StringBuilder. */
   private void toASCII() {
     // for each dh*dw Area of the BufferedImage   
-    for (int i = 0; i < img.getHeight(); i+=dh)
+    for (int i = 0; i < img.getHeight(); i+=4)
     {
-      for (int j = 0; j < img.getWidth(); j+=dw) 
+      for (int j = 0; j < img.getWidth(); j+=2) 
       {
         output.append(matchGamma(getGammaMean(j,i)));
       }
@@ -57,15 +50,15 @@ public class Ascii {
   private int getGammaMean(int x, int y) 
   {
     double gammaSum = 0;
-    for (int i = x; i < Math.min(x + dw, img.getWidth()); i++) 
+    for (int i = x; i < Math.min(x + 2, img.getWidth()); i++) 
     {
-      for (int j = y; j < Math.min(y + dh, img.getHeight()); j++) 
+      for (int j = y; j < Math.min(y + 4, img.getHeight()); j++) 
       {
         Color rgb = new Color(img.getRGB(i,j));
         gammaSum += (double)(rgb.getRed() + rgb.getBlue() + rgb.getGreen())/3.0;
       }
     }
-    int meanGamma = (int) Math.floor(gammaSum/(double)(dw * dh));
+    int meanGamma = (int) Math.floor(gammaSum/(double)(8));
     return Math.abs(primary - meanGamma);
   }
 

@@ -1,7 +1,9 @@
 package braille.input;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import braille.convert.Ascii; 
 import braille.convert.Braille;
@@ -28,7 +30,7 @@ public class ArgHandler {
   
   // TODO: make these a hashmap, so it can be passed more easily to the gui later
   private Boolean ascii = false, braille = false, invert = false, ignore = false, helped = false; 
-  private Boolean color = false, gui = false;
+  private Boolean color = false, klickiBunti = false;
   private File outFile;
   private String palette = "  .-~=*%#W";
   private int brightness = 100, width = 0, height = 0;
@@ -58,8 +60,8 @@ public class ArgHandler {
           break;
 
         case "--gui":
-        case "-g":
-          gui = true;
+        case "-G":
+          klickiBunti = true;
           break;
 
         // passive args
@@ -130,10 +132,10 @@ public class ArgHandler {
           break;
       }
     }
-    if (!ascii && !braille && !helped) {
+    if (!ascii && !braille && !helped && !klickiBunti) {
       throw new IllegalArgumentException("No active args provided. Exiting.");
     }
-    if (inFiles.isEmpty() && !helped) {
+    if (inFiles.isEmpty() && !helped && !klickiBunti) {
       throw new FileNotFoundException("No valid input file was provided.");
     }
   }
@@ -142,17 +144,28 @@ public class ArgHandler {
     for (File file : inFiles) {
       try {
         fHandler.setImage(file);
-        // if width has not been provided as arg, just use the image width
-        width = ((width == 0) ? fHandler.getBufImg().getWidth() : width);
-        height = ((height == 0) ? fHandler.getBufImg().getHeight() : height);
+        // if width has not been provided as arg, just use the GUI-panels width
+        // TODO: Constants Class for stuff like the GUIs proportions
+        // see below
+        width = ((width == 0) ? 500 : width);
+        height = ((height == 0) ? 500 : height);
+        
+        BufferedImage img = fHandler.resizeBufImg(width, height);
 
         System.out.print(
-            (braille ? new Braille(fHandler.resizeBufImg(width, height), invert, brightness) + "\n" : "")
-            + (ascii ? new Ascii(fHandler.getBufImg(), invert, palette, width, height) + "\n" : ""));
+            (braille ? new Braille(img, invert, brightness) + "\n" : "")
+            + (ascii ? new Ascii(img, invert, palette) + "\n" : ""));
       } catch (Exception e) {
         System.err.println("Error while reading input file:");
         System.err.println(e.getMessage());
       }
+    }
+    if (klickiBunti) {
+      // TODO: change this
+      try {
+        fHandler.setImage(inFiles.get(0));
+      } catch (Exception e) {}
+      Gui gui = new Gui(fHandler.getBufImg());
     }
   }
 }

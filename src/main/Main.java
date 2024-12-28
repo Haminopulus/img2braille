@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import braille.input.ArgHandler;
 
 //TODO: Color, Outfile, GUI
+//TODO: make the width/height parameters more centralized s.t. Ascii and Braille Class both dont need to worry about width and height
 
 public class Main {
   public static void main(String... args) {
