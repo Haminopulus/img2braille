@@ -22,15 +22,24 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public final class Gui extends JFrame {
+  private HashMap<String, Boolean> args;
+  private int width, height, brightness;
+  private String palette;
   private JLabel inContainer = new JLabel();
   private JTextArea outTextArea = new JTextArea();
   private JButton nextButton = new JButton("Next");
   private ArrayList<BufferedImage> images;
   private int currentImg = 0;
 
-  public Gui() {
+  public Gui(HashMap<String, Boolean> args, int brightness, String palette, int width, int height) {
+    this.args = args;
+    this.brightness = brightness;
+    this.palette = palette;
+    this.width = width;
+    this.height = height;
     setup();
   }
 

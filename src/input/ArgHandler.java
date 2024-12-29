@@ -4,7 +4,13 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.swing.RowFilter.Entry;
+
 import java.util.ArrayList;
+
 import braille.convert.Ascii; 
 import braille.convert.Braille;
 import braille.input.FileHandler;
@@ -29,9 +35,8 @@ public class ArgHandler {
    +"\t'-H [INT]'/'--height [INT]'                    Changes height to [INT] chars\n"
    +"\t'-o [PATH]'/'--outfile [PATH]'                 prints the converted ASCII/Braille to the given file\n";
   
-  // TODO: make these a hashmap, so it can be passed more easily to the gui later
-  private Boolean ascii = false, braille = false, invert = false, ignore = false, helped = false; 
-  private Boolean color = false, klickiBunti = false;
+  private HashMap<String,Boolean> args = new HashMap<>(Map.of("ascii", false, "braill", false, "invert", false, "color", false));
+  private Boolean ignore = false, helped = false, klickiBunti = false;
   private File outFile;
   private Gui gui;
   private String palette = "  .-~=*%#W";
@@ -53,12 +58,12 @@ public class ArgHandler {
 
         case "--ascii":
         case "-A":
-          ascii = true;
+          this.args.replace("ascii", true);
           break;
 
         case "--braille":
         case "-B":
-          braille = true;
+          this.args.replace("braille", true);
           break;
 
         case "--gui":
@@ -69,13 +74,13 @@ public class ArgHandler {
         // passive args
         case "--invert":
         case "-i":
-          invert = true;
+          this.args.replace("invert", true);
           break;
 
         case "--color":
         case "--colour": // for (Brit) inclusivity
         case "-c":
-          color = true;
+          this.args.replace("color", true);
           break;
 
         case "--palette":
@@ -134,7 +139,7 @@ public class ArgHandler {
           break;
       }
     }
-    if (!ascii && !braille && !helped && !klickiBunti) {
+    if (!this.args.get("ascii") && !this.args.get("braille") && !helped && !klickiBunti) {
       throw new IllegalArgumentException("No active args provided. Exiting.");
     }
     if (inFiles.isEmpty() && !helped && !klickiBunti) {
@@ -146,27 +151,28 @@ public class ArgHandler {
   {
     if (klickiBunti) 
     {
-      gui = new Gui();
+      gui = new Gui(args, brightness, palette, width, height);
     }
     for (File file : inFiles) 
     {
       try 
       {
         fHandler.setImage(file);
+        BufferedImage imgOriginal = fHandler.getBufImg();
         width = ((width == 0) ? Constants.PWIDTH : width);
         height = ((height == 0) ? Constants.PHEIGHT : height);
         
-        BufferedImage img = fHandler.resizeBufImg(width, height);
+        BufferedImage imgResized = fHandler.resizeBufImg(width, height);
         
         if (klickiBunti) 
         {
-          gui.addImage(fHandler.getBufImg());
+          gui.addImage(imgOriginal);
         } 
         else 
         {
           System.out.print(
-              (braille ? new Braille(img, invert, brightness) + "\n" : "")
-              + (ascii ? new Ascii(img, invert, palette) + "\n" : ""));
+              (args.get("braille") ? new Braille(imgResized, args.get("invert"), brightness) + "\n" : "")
+              + (args.get("ascii") ? new Ascii(imgResized, args.get("invert"), palette) + "\n" : ""));
         }
       } 
       catch (Exception e) 
