@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.image.BufferedImage;
 
 import braille.convert.Converter;
+import braille.utils.Args;
 
 /** Class that takes in a BufferedImage and Converts it to Unicode Braille Patterns. 
  * <p> Is accessed via usage of {@code toString() } method. </p>
@@ -13,7 +14,7 @@ import braille.convert.Converter;
 
 public class Braille extends Converter {
   private int brightness;
-  /** Base 16 starting value of the Braille Patterns in the Unicode character set. **/
+  /** Base 16 starting value of the Braille; Patterns in the Unicode character set. **/
   private static final int hexBase = Integer.parseInt("2800", 16);
 
   /** Given an image, inversion bool and a cutoff for the minimum drawing brightness, creates an instance of Braille class.  
@@ -22,9 +23,10 @@ public class Braille extends Converter {
    *  @param invert the {@code Boolean}, that decides whether color should be inverted
    *  @param brightness the {@code int} value represetning the desired brightness cutoff 
    **/
-  public Braille(BufferedImage img, Boolean invert, int brightness) {
-    super(img, (invert ? 0 : 1));
-    this.brightness = brightness;
+  public Braille(BufferedImage img) {
+    super(img, (Args.getInvert() ? 0 : 1));
+    this.brightness = Args.getBrightness();
+    resizeImg(Args.getWidth(), Args.getHeight());
     convert();
   }
   

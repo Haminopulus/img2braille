@@ -8,16 +8,18 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 
+/** Class that handles the ImageIO, so the conversion from file to BufferedImage */
 public class FileHandler {
-  private File image;
-  private BufferedImage bufImg;
-
+  private File imageFile;
+  private BufferedImage img;
+  
+  // Constructors
   public FileHandler() {}
   
-  public FileHandler(File image) throws IllegalArgumentException, IOException {
-    this.image = image;
+  public FileHandler(File imageFile) throws IllegalArgumentException, IOException {
+    this.imageFile = imageFile;
     try {
-      bufImg = ImageIO.read(image);
+      img = ImageIO.read(imageFile);
     }
     catch (IOException e) {
       throw e;
@@ -26,34 +28,29 @@ public class FileHandler {
       throw e;
     }
   }
+  
+  // Getter
+  public BufferedImage getImg() { return img; }
 
-  public File getImage() { return image; }
-  public BufferedImage getBufImg() { return bufImg; }
-
-  public void setImage(File image) throws IllegalArgumentException, IOException { 
-    this.image = image; 
+  /** Converts given File to BufferedImage and returns it. 
+   * @throws IOException
+   * @throws IllegalArgumentException if the file is not a readable format. 
+   * @param imageFile file to be converted 
+   * @return BufferedImage instance
+   **/
+  public BufferedImage setImageFile(File imageFile) throws IllegalArgumentException, IOException { 
+    this.imageFile = imageFile; 
     try {
-      bufImg = ImageIO.read(image);
+      img = ImageIO.read(imageFile);
     }
     catch (IOException e) {
       throw e;
     }
-    if (bufImg == null) { 
+    if (img == null) { 
       throw new IllegalArgumentException("IllegalArgumentException: File " 
-          + image.getAbsolutePath() 
+          + imageFile.getAbsolutePath() 
           + " is not a valid Image file."); 
     }
-  }
-
-  public void setBufImg(int x, int y, Color col) {
-    bufImg.setRGB(x, y, col.getRGB());
-  }
-
-  public BufferedImage resizeBufImg(int nWidth, int nHeight) {
-    BufferedImage resized = new BufferedImage(nWidth, nHeight, bufImg.getType());
-    Graphics2D g = resized.createGraphics();
-    g.drawImage(bufImg, 0, 0, nWidth, nHeight, 0, 0, bufImg.getWidth(), bufImg.getHeight(), null);
-    g.dispose();
-    return (bufImg = resized);
+    return img;
   }
 }

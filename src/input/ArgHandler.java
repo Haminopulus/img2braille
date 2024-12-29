@@ -6,15 +6,15 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.ArrayList;
 
 import javax.swing.RowFilter.Entry;
-
-import java.util.ArrayList;
 
 import braille.convert.Ascii; 
 import braille.convert.Braille;
 import braille.input.FileHandler;
 import braille.utils.Constants;
+import braille.utils.Args;
 import braille.gui.Gui;
 
 public class ArgHandler {
@@ -35,12 +35,9 @@ public class ArgHandler {
    +"\t'-H [INT]'/'--height [INT]'                    Changes height to [INT] chars\n"
    +"\t'-o [PATH]'/'--outfile [PATH]'                 prints the converted ASCII/Braille to the given file\n";
   
-  private HashMap<String,Boolean> args = new HashMap<>(Map.of("ascii", false, "braill", false, "invert", false, "color", false));
-  private Boolean ignore = false, helped = false, klickiBunti = false;
+  private boolean ignore = false, helped = false, klickiBunti = false;
   private File outFile;
   private Gui gui;
-  private String palette = "  .-~=*%#W";
-  private int brightness = 100, width = 0, height = 0;
   private ArrayList<File> inFiles = new ArrayList<>();
   private FileHandler fHandler = new FileHandler();
 
@@ -58,12 +55,12 @@ public class ArgHandler {
 
         case "--ascii":
         case "-A":
-          this.args.replace("ascii", true);
+          Args.setAscii(true);
           break;
 
         case "--braille":
         case "-B":
-          this.args.replace("braille", true);
+          Args.setBraille(true);
           break;
 
         case "--gui":
@@ -74,19 +71,19 @@ public class ArgHandler {
         // passive args
         case "--invert":
         case "-i":
-          this.args.replace("invert", true);
+          Args.setInvert(true);
           break;
 
         case "--color":
         case "--colour": // for (Brit) inclusivity
         case "-c":
-          this.args.replace("color", true);
+          Args.setColor(true);
           break;
 
         case "--palette":
         case "-p":
           try {
-            palette = args[i+1];
+            Args.setPalette(args[i+1]);
             ignore = true;
           } catch (IndexOutOfBoundsException e) {
             System.err.println("No value provided for argument '-p', palette (String) is required. Ignoring.");
@@ -96,7 +93,7 @@ public class ArgHandler {
         case "--brightness":
         case "-b":
           try {
-            brightness = Integer.parseInt(args[i+1]);
+            Args.setBrightness(Integer.parseInt(args[i+1]));
             ignore = true;
           } catch (IndexOutOfBoundsException e) {
             System.err.println("No value provided for argument '-b', brightness (int) is required. Ignoring.");
@@ -108,7 +105,7 @@ public class ArgHandler {
         case "--width":
         case "-W":
           try {
-            width = Integer.parseInt(args[i+1]);
+            Args.setWidth(Integer.parseInt(args[i+1]));
             ignore = true;
           } catch (IndexOutOfBoundsException e) {
             System.err.println("No value provided for argument '-W', width (int) is required. Ignoring.");
@@ -120,7 +117,7 @@ public class ArgHandler {
         case "--height":
         case "-H":
           try {
-            height = Integer.parseInt(args[i+1]);
+            Args.setHeight(Integer.parseInt(args[i+1]));
             ignore = true;
           } catch (IndexOutOfBoundsException e) {
             System.err.println("No value provided for argument '-H', height (int) is required. Ignoring.");
@@ -139,7 +136,7 @@ public class ArgHandler {
           break;
       }
     }
-    if (!this.args.get("ascii") && !this.args.get("braille") && !helped && !klickiBunti) {
+    if (!Args.getAscii() && !Args.getBraille() && !helped && !klickiBunti) {
       throw new IllegalArgumentException("No active args provided. Exiting.");
     }
     if (inFiles.isEmpty() && !helped && !klickiBunti) {
@@ -149,30 +146,37 @@ public class ArgHandler {
 
   public void runWithArgs() 
   {
+    BufferedImage img; 
+    if (Args.getWidth() == 0) 
+    {
+      Args.setWidth(Constants.PWIDTH);
+    }
+
+    if (Args.getHeight() == 0) 
+    {
+      Args.setHeight(Constants.PHEIGHT);
+    }
+
     if (klickiBunti) 
     {
-      gui = new Gui(args, brightness, palette, width, height);
+      gui = new Gui();
     }
+
     for (File file : inFiles) 
     {
       try 
       {
-        fHandler.setImage(file);
-        BufferedImage imgOriginal = fHandler.getBufImg();
-        width = ((width == 0) ? Constants.PWIDTH : width);
-        height = ((height == 0) ? Constants.PHEIGHT : height);
-        
-        BufferedImage imgResized = fHandler.resizeBufImg(width, height);
-        
+        img = fHandler.setImageFile(file);
+
         if (klickiBunti) 
         {
-          gui.addImage(imgOriginal);
+          gui.addImage(img);
         } 
         else 
         {
           System.out.print(
-              (args.get("braille") ? new Braille(imgResized, args.get("invert"), brightness) + "\n" : "")
-              + (args.get("ascii") ? new Ascii(imgResized, args.get("invert"), palette) + "\n" : ""));
+              (Args.getBraille() ? new Braille(img) + "\n" : "")
+              + (Args.getAscii() ? new Ascii(img) + "\n" : ""));
         }
       } 
       catch (Exception e) 

@@ -1,6 +1,7 @@
 package braille.convert;
 
 import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
 abstract class Converter {
@@ -8,6 +9,7 @@ abstract class Converter {
   protected StringBuilder output = new StringBuilder();
   protected int primary;
 
+  // Constructor
   protected Converter(BufferedImage img, int primary) {
     this.img = img;
     this.primary = primary;
@@ -35,9 +37,22 @@ abstract class Converter {
       output.append("\n");
     }
   }
-  
+ 
+  /** Should convert a given part of the image to a Unicode Character, 
+   *  depending on some metric like the average gamma value.
+   *  @param x horizontal start position 
+   *  @param y vertical start position 
+   *  @return {@code single character String} (most unicode chars cannot be stored in a singular char variable)
+   **/
   protected abstract String getChar(int x, int y);
-
+  
+  protected BufferedImage resizeImg(int width, int height) {
+    BufferedImage resized = new BufferedImage(width, height, img.getType());
+    Graphics2D g = resized.createGraphics();
+    g.drawImage(img, 0, 0, width, height, 0, 0, img.getWidth(), img.getHeight(), null);
+    g.dispose();
+    return (img = resized);
+  }
   @Override
   public String toString() {
     return output.toString();

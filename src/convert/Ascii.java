@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.image.BufferedImage;
 
 import braille.convert.Converter;
+import braille.utils.Args;
 
 /** Class that takes in a BufferedImage and Converts it to an Ascii String. 
  * <p> Is accessed via usage of {@code toString() } method. </p>
@@ -19,9 +20,10 @@ public class Ascii extends Converter {
    *  @param invert the {@code Boolean}, that decides whether color should be inverted
    *  @param palette the {@code String} of chars that should be used to draw the Ascii image, ordered from darkest to brightest
    */
-  public Ascii(BufferedImage img, Boolean invert, String palette) {
-    super(img, (invert ? 255 : 0));
-    this.palette = palette;
+  public Ascii(BufferedImage img) {
+    super(img, (Args.getInvert() ? 255 : 0));
+    this.palette = Args.getPalette();
+    resizeImg(Args.getWidth(), Args.getHeight());
     convert();
   }
  
@@ -34,7 +36,7 @@ public class Ascii extends Converter {
   protected String getChar(int x, int y) 
   {
     double gamma = getGammaMean(x,y);
-    int index = (int) Math.floor(gamma / 255.0 * (double) palette.length()) - 1;
+    int index = (int) Math.floor(gamma / 255.0 * (double) (palette.length()-1));
     return String.valueOf(palette.charAt(index));
   }
 

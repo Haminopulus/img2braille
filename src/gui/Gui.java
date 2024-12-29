@@ -11,6 +11,7 @@ import javax.swing.text.StyledDocument;
 import braille.convert.Ascii;
 import braille.convert.Braille;
 import braille.utils.Constants;
+import braille.utils.Args;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -25,21 +26,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public final class Gui extends JFrame {
-  private HashMap<String, Boolean> args;
-  private int width, height, brightness;
-  private String palette;
   private JLabel inContainer = new JLabel();
   private JTextArea outTextArea = new JTextArea();
   private JButton nextButton = new JButton("Next");
-  private ArrayList<BufferedImage> images;
+  private ArrayList<BufferedImage> images = new ArrayList<>();
   private int currentImg = 0;
 
-  public Gui(HashMap<String, Boolean> args, int brightness, String palette, int width, int height) {
-    this.args = args;
-    this.brightness = brightness;
-    this.palette = palette;
-    this.width = width;
-    this.height = height;
+  public Gui() {
     setup();
   }
 
@@ -52,12 +45,11 @@ public final class Gui extends JFrame {
   }
 
   private void setup() {
-    this.images = new ArrayList<>();
     // JFRAME (main frame)
     setName("img2braille gui");
     setSize(Constants.FWIDTH, Constants.FHEIGHT);
     setBackground(new Color(0,0,0));
-    this.setLocationRelativeTo(null);
+    setLocationRelativeTo(null);
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     setResizable(false);
 
@@ -90,17 +82,22 @@ public final class Gui extends JFrame {
   }
 
   private void setImage(BufferedImage img) {
-    outTextArea.setFont(outTextArea.getFont().deriveFont(1600f/(float)img.getHeight()));
+    outTextArea.setFont(outTextArea.getFont().deriveFont(
+          1600f / (float) Math.max(Args.getWidth(), Args.getHeight())));
+    
     ImageIcon icon = new ImageIcon(
         img.getScaledInstance(
-          Constants.PWIDTH, 
-          Constants.PHEIGHT, 
-          Image.SCALE_SMOOTH));
+          Args.getWidth(), 
+          Args.getHeight(), 
+          Image.SCALE_SMOOTH
+          ).getScaledInstance(
+          Constants.PWIDTH,
+          Constants.PHEIGHT,
+          Image.SCALE_SMOOTH)
+        );
 
     inContainer.setIcon(icon);
-    String output = new Ascii(img, false, " .-~=*%#@").toString();
-    //String output = new Braille(img, false, 150).toString();
-
+    String output = new Ascii(img).toString();
     outTextArea.setText(output);
     repaint();
   }
