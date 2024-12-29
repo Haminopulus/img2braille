@@ -27,17 +27,15 @@ public class Braille {
   public Braille(BufferedImage img, Boolean invert, int brightness) {
     this.img = img;
     this.brightness = brightness;
-
     primary = (invert ? 0 : 1);
-    
     toBraille();
   }
   
   /** Converts the internally saved BufferedImage to Braille and saves it in the output StringBuilder. **/
   private void toBraille() {
-    for (int i = 0; i < img.getHeight()-img.getHeight()%4; i+=4)
+    for (int i = 0; i < img.getHeight(); i+=4)
     {
-      for (int j = 0; j < img.getWidth()-img.getWidth()%2; j+=2) 
+      for (int j = 0; j < img.getWidth(); j+=2) 
       {
         output.append(getBraillePattern(j,i));
       }
@@ -62,14 +60,11 @@ public class Braille {
   private String getBraillePattern(int x, int y) 
   {
     int[] dots = new int[8];
-    dots[0] = getGamma(x, y);
-    dots[1] = getGamma(x, y+1);
-    dots[2] = getGamma(x, y+2);
-    dots[3] = getGamma(x+1, y);
-    dots[4] = getGamma(x+1, y+1);
-    dots[5] = getGamma(x+1, y+2);
-    dots[6] = getGamma(x, y + 3);
-    dots[7] = getGamma(x + 1, y + 3);
+    int[] xpos = new int[]{x, x, x, x+1, x+1, x+1, x, x+1};
+    int[] ypos = new int[]{y, y+1, y+2, y, y+1, y+2, y+3, y+3};
+    for (int i = 0; i < 8; i++) {
+      dots[i] = (xpos[i] > img.getWidth()-1 || ypos[i] > img.getHeight()-1) ? 0 : getGamma(xpos[i], ypos[i]);
+    }
 
     StringBuilder bin = new StringBuilder();
     for (int i = dots.length - 1; i >= 0; i--)

@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import braille.convert.Ascii; 
 import braille.convert.Braille;
 import braille.input.FileHandler;
+import braille.utils.Constants;
 import braille.gui.Gui;
 
 public class ArgHandler {
@@ -32,6 +33,7 @@ public class ArgHandler {
   private Boolean ascii = false, braille = false, invert = false, ignore = false, helped = false; 
   private Boolean color = false, klickiBunti = false;
   private File outFile;
+  private Gui gui;
   private String palette = "  .-~=*%#W";
   private int brightness = 100, width = 0, height = 0;
   private ArrayList<File> inFiles = new ArrayList<>();
@@ -140,32 +142,38 @@ public class ArgHandler {
     }
   }
 
-  public void runWithArgs() {
-    for (File file : inFiles) {
-      try {
+  public void runWithArgs() 
+  {
+    if (klickiBunti) 
+    {
+      gui = new Gui();
+    }
+    for (File file : inFiles) 
+    {
+      try 
+      {
         fHandler.setImage(file);
-        // if width has not been provided as arg, just use the GUI-panels width
-        // TODO: Constants Class for stuff like the GUIs proportions
-        // see below
-        width = ((width == 0) ? 500 : width);
-        height = ((height == 0) ? 500 : height);
+        width = ((width == 0) ? Constants.PWIDTH : width);
+        height = ((height == 0) ? Constants.PHEIGHT : height);
         
         BufferedImage img = fHandler.resizeBufImg(width, height);
-
-        System.out.print(
-            (braille ? new Braille(img, invert, brightness) + "\n" : "")
-            + (ascii ? new Ascii(img, invert, palette) + "\n" : ""));
-      } catch (Exception e) {
+        
+        if (klickiBunti) 
+        {
+          gui.addImage(fHandler.getBufImg());
+        } 
+        else 
+        {
+          System.out.print(
+              (braille ? new Braille(img, invert, brightness) + "\n" : "")
+              + (ascii ? new Ascii(img, invert, palette) + "\n" : ""));
+        }
+      } 
+      catch (Exception e) 
+      {
         System.err.println("Error while reading input file:");
         System.err.println(e.getMessage());
       }
-    }
-    if (klickiBunti) {
-      // TODO: change this
-      try {
-        fHandler.setImage(inFiles.get(0));
-      } catch (Exception e) {}
-      Gui gui = new Gui(fHandler.getBufImg());
     }
   }
 }
