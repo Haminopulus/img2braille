@@ -147,7 +147,7 @@ public class ArgHandler {
   public void runWithArgs() 
   {
     BufferedImage img; 
-    if (Args.getWidth() == 0) 
+    if (Args.getWidth() == 0 || Args.getHeight() == 0) 
     {
       Args.setWidth(Constants.PWIDTH);
     }

@@ -36,7 +36,7 @@ public class Ascii extends Converter {
   protected String getChar(int x, int y) 
   {
     double gamma = getGammaMean(x,y);
-    int index = (int) Math.floor(gamma / 255.0 * (double) (palette.length()-1));
+    int index = (int) Math.floor(gamma / 255.0 * (double) Math.max(0, (palette.length()-1)));
     return String.valueOf(palette.charAt(index));
   }
 
