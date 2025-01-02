@@ -11,4 +11,7 @@ public final class Constants {
   public static final int PWIDTH = (int)(((double) FWIDTH - (double) 50)/ 3.0);
   public static final int PHEIGHT = FHEIGHT - 50;
 
+  // Images 
+  public static final int MAXSIZE = 500;
+
 }

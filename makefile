@@ -10,8 +10,9 @@ run:
 	java -cp target braille/main/Main $(args) 
 
 install: compile
-	mv ./target/braille /usr/local/share/
+	cp -r ./target/braille /usr/local/share/
 	cp ./bin/braille /usr/local/bin/
+	cp -r ./fonts/ /usr/local/share/braille/
 
 uninstall:
 	rm -rf /usr/local/share/braille/

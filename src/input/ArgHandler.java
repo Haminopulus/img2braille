@@ -1,5 +1,7 @@
 package braille.input;
 
+import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -144,18 +146,12 @@ public class ArgHandler {
     }
   }
 
+
   public void runWithArgs() 
   {
     BufferedImage img; 
-    if (Args.getWidth() == 0 || Args.getHeight() == 0) 
-    {
-      Args.setWidth(Constants.PWIDTH);
-    }
-
-    if (Args.getHeight() == 0) 
-    {
-      Args.setHeight(Constants.PHEIGHT);
-    }
+    Args.setWidth((Args.getWidth() == 0) ? Constants.PWIDTH : Args.getWidth());
+    Args.setHeight((Args.getHeight() == 0) ? Constants.PHEIGHT : Args.getHeight());
 
     if (klickiBunti) 
     {
@@ -166,11 +162,18 @@ public class ArgHandler {
     {
       try 
       {
-        img = fHandler.setImageFile(file);
+        img = fHandler.setImageFile(file); 
+        // scale img down if exceeds max size
+        String filePath = file.getAbsolutePath(); 
+        String newPath = fHandler.resizeIfNeeded(img, filePath);
+        if (filePath != newPath)
+        {
+          filePath = newPath;
+        }
 
         if (klickiBunti) 
         {
-          gui.addImage(img);
+          gui.addImage(filePath);
         } 
         else 
         {
